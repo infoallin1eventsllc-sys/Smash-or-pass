@@ -1,0 +1,33 @@
+{
+  "name": "smash-or-pass-demo",
+  "version": "1.0.0",
+  "description": "🎀 Interactive demo of SMASH OR PASS - Match, Chat, Love",
+  "main": "demo-server.js",
+  "scripts": {
+    "start": "node demo-server.js",
+    "dev": "nodemon demo-server.js",
+    "demo": "npm install && node demo-server.js"
+  },
+  "keywords": [
+    "dating",
+    "app",
+    "demo",
+    "javascript",
+    "express",
+    "jwt"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
