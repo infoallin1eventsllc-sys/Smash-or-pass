@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 SMASH OR PASS - Live Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 600px;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Auth Screen */
+        .auth-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .auth-form {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .auth-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .auth-toggle {
+            margin-top: 15px;
+            color: #666;
+        }
+
+        .auth-toggle a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Discover Screen */
+        .discover-screen {
+            justify-content: space-between;
+        }
+
+        .profile-card {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            cursor: grab;
+            transition: transform 0.1s;
+        }
+
+        .profile-card.dragging {
+            cursor: grabbing;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-image.pass {
+            animation: swipeLeft 0.5s ease-out forwards;
+        }
+
+        .profile-image.smash {
+            animation: swipeRight 0.5s ease-out forwards;
+        }
+
+        @keyframes swipeLeft {
+            to {
+                transform: translateX(-150%) rotate(-20deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swipeRight {
+            to {
+                transform: translateX(150%) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        .profile-info {
+            padding: 15px;
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .profile-age {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .profile-bio {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-pass {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .btn-pass:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .btn-smash {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-smash:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Match Screen */
+        .match-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .match-content {
+            animation: matchPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes matchPop {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        .match-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+
+        .match-text {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .match-subtext {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .match-profile {
+            background: white;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .match-avatar {
+            font-size: 50px;
+        }
+
+        .match-info {
+            text-align: left;
+        }
+
+        .match-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Chat Screen */
+        .chat-screen {
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-avatar {
+            font-size: 30px;
+        }
+
+        .chat-user-info {
+            text-align: left;
+        }
+
+        .chat-username {
+            font-weight: bold;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f9f9f9;
+        }
+
+        .message {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+        }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-send {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.1);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 24px;
+            transition: all 0.3s;
+            color: #999;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .nav-item:hover {
+            color: #667eea;
+        }
+
+        /* Messages Screen */
+        .messages-list {
+            padding: 10px;
+        }
+
+        .conversation-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .conversation-item:hover {
+            background: #f9f9f9;
+        }
+
+        .conversation-avatar {
+            font-size: 40px;
+        }
+
+        .conversation-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .conversation-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .conversation-preview {
+            font-size: 14px;
+            color: #999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Profile Screen */
+        .profile-screen {
+            padding: 0;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .profile-large-avatar {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+
+        .profile-large-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-details {
+            padding: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .stat {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+                max-width: 100%;
+                height: 100vh;
+            }
+
+            .screen {
+                min-height: calc(100vh - 100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">💕 SMASH OR PASS</div>
+
+        <!-- Auth Screen -->
+        <div class="screen auth-screen active" id="authScreen">
+            <div class="auth-form">
+                <h2 id="authTitle">Sign Up</h2>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="firstName" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="SecurePass123!">
+                </div>
+                <div class="form-group" id="ageGroup" style="display: none;">
+                    <label>Age</label>
+                    <input type="number" id="age" placeholder="25" min="18" max="100">
+                </div>
+                <div class="form-group" id="genderGroup" style="display: none;">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="toggleAuthMode()">Sign Up</button>
+                <div class="auth-toggle">
+                    <span id="authToggleText">Already have an account? <a onclick="switchAuthMode()">Sign In</a></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discover Screen -->
+        <div class="screen" id="discoverScreen">
+            <div class="profile-card" id="profileCard">
+                <div class="profile-image" id="profileImage">😊</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Sarah Johnson</div>
+                    <div class="profile-age" id="profileAge">24 • Developer</div>
+                    <div class="profile-bio" id="profileBio">Love coding and hiking</div>
+                    <div class="profile-tags" id="profileTags">
+                        <span class="tag">Tech</span>
+                        <span class="tag">Travel</span>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-action btn-pass" onclick="passProfile()" title="Pass">❌</button>
+                <button class="btn-action btn-smash" onclick="smashProfile()" title="Smash">❤️</button>
+            </div>
+        </div>
+
+        <!-- Match Screen -->
+        <div class="screen" id="matchScreen">
+            <div class="match-content">
+                <div class="match-emoji">🎉</div>
+                <div class="match-text">It's a Match!</div>
+                <div class="match-subtext">You both like each other!</div>
+                <div class="match-profile">
+                    <div class="match-avatar">😊</div>
+                    <div class="match-info">
+                        <div class="match-name" id="matchName">Sarah Johnson</div>
+                        <div>Age 24</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="startChat()" style="background: white; color: #667eea;">Send a Message</button>
+                <button class="btn btn-secondary" onclick="goToDiscover()">Keep Swiping</button>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div class="screen" id="chatScreen">
+            <div class="chat-header">
+                <div class="chat-avatar">😊</div>
+                <div class="chat-user-info">
+                    <div class="chat-username">Sarah Johnson</div>
+                    <div class="chat-status">Online</div>
+                </div>
+            </div>
+            <div class="messages" id="messages">
+                <div class="message received">
+                    <div class="message-content">Hey! How are you? 👋</div>
+                </div>
+                <div class="message sent">
+                    <div class="message-content">I'm doing great! How about you?</div>
+                </div>
+                <div class="message received">
+                    <div class="message-content">Same! Are you into tech stuff?</div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="messageInput" placeholder="Type a message...">
+                <button class="btn-send" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+
+        <!-- Messages Screen -->
+        <div class="screen" id="messagesScreen">
+            <div class="messages-list">
+                <div class="conversation-item" onclick="openChat()">
+                    <div class="conversation-avatar">😊</div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">Sarah Johnson</div>
+                        <div class="conversation-preview">That sounds amazing! Let's...</div>
+                    </div>
+                    <div class="unread-badge">2</div>
+                </div>
+                <div class="conversation-item" onclick="openChat()">
+                    <div class="conversation-avatar">🎨</div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">Emma Davis</div>
+                        <div class="conversation-preview">Haha you're funny 😄</div>
+                    </div>
+                </div>
+                <div class="conversation-item" onclick="openChat()">
+                    <div class="conversation-avatar">🏃</div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">Alex Chen</div>
+                        <div class="conversation-preview">See you this weekend!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div class="screen" id="profileScreen">
+            <div class="profile-header">
+                <div class="profile-large-avatar">👤</div>
+                <div class="profile-large-name" id="myName">John Doe</div>
+                <div style="opacity: 0.9;">25 • Software Developer</div>
+            </div>
+            <div class="profile-details">
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="statLikes">42</div>
+                        <div class="stat-label">Likes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statMatches">12</div>
+                        <div class="stat-label">Matches</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statMessages">18</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Bio</div>
+                    <div class="detail-value">Software developer passionate about creating amazing experiences</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Interests</div>
+                    <div class="profile-tags">
+                        <span class="tag">Tech</span>
+                        <span class="tag">Gaming</span>
+                        <span class="tag">Fitness</span>
+                        <span class="tag">Travel</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="switchScreen('discover')">🔥</button>
+            <button class="nav-item" onclick="switchScreen('messages')">💬</button>
+            <button class="nav-item" onclick="switchScreen('profile')">👤</button>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentUser = null;
+        let currentScreen = 'auth';
+        let isSignUp = true;
+        let profileIndex = 0;
+        let stats = {
+            likes: 42,
+            matches: 12,
+            messages: 18
+        };
+
+        // Mock profiles
+        const profiles = [
+            { emoji: '😊', name: 'Sarah Johnson', age: 24, job: 'Developer', bio: 'Love coding and hiking', tags: ['Tech', 'Travel'] },
+            { emoji: '🎨', name: 'Emma Davis', age: 23, job: 'Designer', bio: 'Creative soul exploring the world', tags: ['Art', 'Photography'] },
+            { emoji: '🏃', name: 'Alex Chen', age: 26, job: 'Fitness Coach', bio: 'Health enthusiast and runner', tags: ['Fitness', 'Outdoors'] },
+            { emoji: '📚', name: 'Lisa Anderson', age: 25, job: 'Teacher', bio: 'Love reading and good conversations', tags: ['Education', 'Books'] },
+            { emoji: '🎵', name: 'Maya Patel', age: 24, job: 'Musician', bio: 'Creating music and memories', tags: ['Music', 'Arts'] }
+        ];
+
+        // Toggle auth mode
+        function toggleAuthMode() {
+            if (isSignUp) {
+                // Sign up
+                const firstName = document.getElementById('firstName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const age = document.getElementById('age').value;
+                const gender = document.getElementById('gender').value;
+
+                if (!firstName || !email || !password || !age) {
+                    showToast('Please fill all fields');
+                    return;
+                }
+
+                if (password.length < 12) {
+                    showToast('Password must be at least 12 characters');
+                    return;
+                }
+
+                currentUser = { firstName, email, age, gender };
+                showToast('Account created! Welcome ' + firstName);
+                login();
+            } else {
+                // Sign in
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    showToast('Please enter email and password');
+                    return;
+                }
+
+                currentUser = { firstName: 'John', email, age: 25, gender: 'M' };
+                showToast('Welcome back!');
+                login();
+            }
+        }
+
+        function switchAuthMode() {
+            isSignUp = !isSignUp;
+            const titleEl = document.getElementById('authTitle');
+            const buttonEl = document.querySelector('.auth-form .btn-primary');
+            const toggleEl = document.getElementById('authToggleText');
+            const ageGroup = document.getElementById('ageGroup');
+            const genderGroup = document.getElementById('genderGroup');
+
+            if (isSignUp) {
+                titleEl.textContent = 'Sign Up';
+                buttonEl.textContent = 'Sign Up';
+                toggleEl.innerHTML = 'Already have an account? <a onclick="switchAuthMode()">Sign In</a>';
+                ageGroup.style.display = 'block';
+                genderGroup.style.display = 'block';
+                document.getElementById('firstName').parentElement.style.display = 'block';
+            } else {
+                titleEl.textContent = 'Sign In';
+                buttonEl.textContent = 'Sign In';
+                toggleEl.innerHTML = 'Don\'t have an account? <a onclick="switchAuthMode()">Sign Up</a>';
+                ageGroup.style.display = 'none';
+                genderGroup.style.display = 'none';
+                document.getElementById('firstName').parentElement.style.display = 'none';
+            }
+
+            document.getElementById('firstName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('age').value = '';
+        }
+
+        function login() {
+            switchScreen('discover');
+            document.getElementById('myName').textContent = (currentUser?.firstName || 'John') + ' Doe';
+        }
+
+        function logout() {
+            currentUser = null;
+            profileIndex = 0;
+            currentScreen = 'auth';
+            document.getElementById('authScreen').classList.add('active');
+            document.getElementById('discoverScreen').classList.remove('active');
+            document.getElementById('messagesScreen').classList.remove('active');
+            document.getElementById('profileScreen').classList.remove('active');
+            updateNavigation();
+        }
+
+        // Switch screens
+        function switchScreen(screen) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            currentScreen = screen;
+
+            switch(screen) {
+                case 'discover':
+                    document.getElementById('discoverScreen').classList.add('active');
+                    loadProfile();
+                    break;
+                case 'messages':
+                    document.getElementById('messagesScreen').classList.add('active');
+                    break;
+                case 'profile':
+                    document.getElementById('profileScreen').classList.add('active');
+                    break;
+            }
+
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            document.querySelectorAll('.nav-item').forEach((btn, idx) => {
+                btn.classList.remove('active');
+            });
+
+            if (currentScreen === 'discover') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            else if (currentScreen === 'messages') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            else if (currentScreen === 'profile') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        }
+
+        // Load profile
+        function loadProfile() {
+            if (profileIndex >= profiles.length) {
+                profileIndex = 0;
+            }
+
+            const profile = profiles[profileIndex];
+            document.getElementById('profileImage').textContent = profile.emoji;
+            document.getElementById('profileName').textContent = profile.name;
+            document.getElementById('profileAge').textContent = profile.age + ' • ' + profile.job;
+            document.getElementById('profileBio').textContent = profile.bio;
+
+            const tagsHtml = profile.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('profileTags').innerHTML = tagsHtml;
+        }
+
+        // Pass profile
+        function passProfile() {
+            const card = document.getElementById('profileCard');
+            card.style.opacity = '0.5';
+            card.style.transform = 'translateX(-200px) rotate(-30deg)';
+
+            setTimeout(() => {
+                profileIndex++;
+                loadProfile();
+                card.style.opacity = '1';
+                card.style.transform = 'translateX(0) rotate(0deg)';
+            }, 300);
+
+            showToast('Passed ❌');
+        }
+
+        // Smash profile
+        function smashProfile() {
+            stats.likes += Math.random() > 0.5 ? 1 : 0;
+            const isMatch = Math.random() > 0.5;
+
+            if (isMatch) {
+                stats.matches++;
+                showMatch();
+            } else {
+                showToast('Liked ❤️');
+                const card = document.getElementById('profileCard');
+                card.style.opacity = '0.5';
+                card.style.transform = 'translateX(200px) rotate(30deg)';
+
+                setTimeout(() => {
+                    profileIndex++;
+                    loadProfile();
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateX(0) rotate(0deg)';
+                }, 300);
+            }
+        }
+
+        // Show match
+        function showMatch() {
+            const profile = profiles[profileIndex];
+            document.getElementById('matchName').textContent = profile.name;
+
+            document.getElementById('matchScreen').classList.add('active');
+            document.getElementById('discoverScreen').classList.remove('active');
+            currentScreen = 'match';
+            updateNavigation();
+        }
+
+        // Go to discover
+        function goToDiscover() {
+            profileIndex++;
+            switchScreen('discover');
+        }
+
+        // Start chat
+        function startChat() {
+            stats.messages++;
+            switchScreen('messages');
+        }
+
+        // Open chat
+        function openChat() {
+            switchScreen('chat-placeholder');
+            document.getElementById('chatScreen').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        }
+
+        // Send message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('messages');
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message sent';
+            msgEl.innerHTML = `<div class="message-content">${message}</div>`;
+            messagesDiv.appendChild(msgEl);
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            stats.messages++;
+
+            // Simulate reply
+            setTimeout(() => {
+                const replyEl = document.createElement('div');
+                replyEl.className = 'message received';
+                replyEl.innerHTML = '<div class="message-content"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+                messagesDiv.appendChild(replyEl);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                setTimeout(() => {
+                    replyEl.innerHTML = `<div class="message-content">That's awesome! 😄</div>`;
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }, 1500);
+            }, 500);
+        }
+
+        // Show toast
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // Initialize
+        loadProfile();
+    </script>
+</body>
+</html>
