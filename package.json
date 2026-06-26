@@ -1,7 +1,7 @@
 {
   "name": "smash-or-pass-demo",
   "version": "1.0.0",
-  "description": "🎀 Interactive demo of SMASH OR PASS - Match, Chat, Love",
+  "description": "Interactive demo of SMASH OR PASS - Match, Chat, Love",
   "main": "demo-server.js",
   "scripts": {
     "start": "node demo-server.js",
@@ -16,8 +16,12 @@
     "express",
     "jwt"
   ],
-  "author": "Your Name",
+  "author": "Otis Williams",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infoallin1eventsllc-sys/smash-or-pass"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
